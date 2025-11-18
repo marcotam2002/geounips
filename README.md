@@ -1,11 +1,20 @@
 <p align="center">
  <h2 align="center"> Geometry Meets Light: Leveraging Geometric Priors for Universal Photometric Stereo under Limited Multi-Illumination Cues </h2>
- <p align="center"> 
-    King-Man Tam · Satoshi Ikehata · Yuta Asano · Zhaoyi An · Rei Kawakami
- </p>
- <p align="center"> 
-    <b>Institute of Science Tokyo, National Institute of Informatics, Denso IT Laboratory</b>
- </p>
+<p align="center">
+    King-Man Tam<sup>1</sup> · 
+    Satoshi Ikehata<sup>2,3</sup> · 
+    Yuta Asano<sup>2</sup> · 
+    Zhaoyi An<sup>1</sup> · 
+    Rei Kawakami<sup>1</sup>
+</p>
+
+<p align="center">
+    <b>
+        <sup>1</sup>Institute of Science Tokyo &nbsp;&nbsp;
+        <sup>2</sup>National Institute of Informatics &nbsp;&nbsp;
+        <sup>3</sup>Denso IT Laboratory
+    </b>
+</p>
  <p align="center"> 
     <b>AAAI 2026 Oral</b>
  </p>
