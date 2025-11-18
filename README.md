@@ -18,31 +18,40 @@
     </a>
 </p>
 
+## 🛠️ Environment Setup
+
 ```bash
 conda create -n geounips python=3.10.19
 conda activate geounips
-pip install torch==2.4.1+cu121 torchvision==0.19.1+cu121 torchaudio==2.4.1+cu121 --index-url https://download.pytorch.org/whl/cu121
+
+pip install torch==2.4.1+cu121 torchvision==0.19.1+cu121 torchaudio==2.4.1+cu121 \
+    --index-url https://download.pytorch.org/whl/cu121
+
 pip install -r requirements.txt
-
----
-
-## 📜 **Citation**  
-If you find this work useful, please cite:  
-```bibtex
-@inproceedings{your_paper,
-  title={Your Paper Title},
-  author={Your Name and Co-authors},
-  booktitle={CVPR},
-  year={202X}
-}
 ```
 
 ---
 
-## 📝 **License**  
-This project is released under the [MIT License](LICENSE).  
+## 📜 Citation
 
-🙌 **Star** ⭐ and **Fork** 🍴 this repo if you find it useful! 🚀  
+If you find our work helpful, please consider citing:
+
+```bibtex
+@misc{tam2025geounips,
+      title={Geometry Meets Light: Leveraging Geometric Priors for Universal Photometric Stereo under Limited Multi-Illumination Cues}, 
+      author={King-Man Tam, Satoshi Ikehata, Yuta Asano, Zhaoyi An, Rei Kawakami},
+      year={2025},
+      eprint={2511.13015},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+
+```
 
 ---
- -->
+
+## 📝 License
+
+This project is released under the [MIT License](LICENSE).
+
+If you find this repository useful, please consider **starring ⭐** and **forking 🍴** it!
