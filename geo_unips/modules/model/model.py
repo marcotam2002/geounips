@@ -1,25 +1,12 @@
-
-"""
-Scalable, Detailed and Mask-free Universal Photometric Stereo Network (CVPR2023)
-# Copyright (c) 2023 Satoshi Ikehata
-# All rights reserved.
-"""
-
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.nn.init import kaiming_normal_, trunc_normal_
 
 from .model_utils import *
 from . import transformer
-from . import convnext
-from . import uper
 from ..utils import gauss_filter
 from ..utils.ind2sub import *
-from .decompose_tensors import *
-
-from typing import List, Dict, Tuple, Union
 
 from .vggt.models.aggregator import Aggregator
 from .vggt.heads.dpt_head import DPTHead
