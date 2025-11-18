@@ -39,7 +39,7 @@ If you find our work helpful, please consider citing:
 ```bibtex
 @misc{tam2025geounips,
       title={Geometry Meets Light: Leveraging Geometric Priors for Universal Photometric Stereo under Limited Multi-Illumination Cues}, 
-      author={King-Man Tam, Satoshi Ikehata, Yuta Asano, Zhaoyi An, Rei Kawakami},
+      author={King-Man Tam and Satoshi Ikehata and Yuta Asano and Zhaoyi An and Rei Kawakami},
       year={2025},
       eprint={2511.13015},
       archivePrefix={arXiv},
