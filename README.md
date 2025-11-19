@@ -1,11 +1,20 @@
 <p align="center">
  <h2 align="center"> Geometry Meets Light: Leveraging Geometric Priors for Universal Photometric Stereo under Limited Multi-Illumination Cues </h2>
- <p align="center"> 
-    King-Man Tam · Satoshi Ikehata · Yuta Asano · Zhaoyi An · Rei Kawakami
- </p>
- <p align="center"> 
-    <b>Institute of Science Tokyo, National Institute of Informatics, Denso IT Laboratory</b>
- </p>
+<p align="center">
+    King-Man Tam<sup>1</sup> · 
+    Satoshi Ikehata<sup>2,3</sup> · 
+    Yuta Asano<sup>2</sup> · 
+    Zhaoyi An<sup>1</sup> · 
+    Rei Kawakami<sup>1</sup>
+</p>
+
+<p align="center">
+    <b>
+        <sup>1</sup>Institute of Science Tokyo &nbsp;&nbsp;
+        <sup>2</sup>National Institute of Informatics &nbsp;&nbsp;
+        <sup>3</sup>Denso IT Laboratory
+    </b>
+</p>
  <p align="center"> 
     <b>AAAI 2026 Oral</b>
  </p>
@@ -18,7 +27,19 @@
     </a>
 </p>
 
-## 🛠️ Environment Setup
+
+---
+
+## 🚀 **Installation & Usage**
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/marcotam2002/geounips.git
+cd geounips
+```
+
+### 2. Environment Setup
 
 ```bash
 conda create -n geounips python=3.10.19
@@ -29,6 +50,18 @@ pip install torch==2.4.1+cu121 torchvision==0.19.1+cu121 torchaudio==2.4.1+cu121
 
 pip install einops
 pip install opencv-python
+```
+
+### 3. Download the Model Weights
+
+Download the checkpoint file from [this link](https://drive.google.com/file/d/1GWcdvsLMpjfaqWEvAskf7Tn1Nvv-KeKE/view?usp=sharing) and place it at `checkpoint/normal/ckpt.pytmodel`.
+
+### 4. 🏁 **Quick Start** 
+
+Once everything is set up, run the demo script with the following command. The --session_name argument specifies the output folder, and the --test_dir argument specifies the input image folder:
+
+```bash
+python geo_unips/main.py --session_name "path_to_output" --test_dir "path_to_input" --checkpoint checkpoint --max_image_num 4 --max_image_res 2048 --scalable --target normal
 ```
 
 ---
