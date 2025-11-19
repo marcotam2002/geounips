@@ -30,10 +30,10 @@
 ---
 
 ## 📌 **Highlights**  
-✅ **Robust Fine-Detail Normal Recovery**: GeoUniPS reconstructs sharp and accurate surface normals even with limited multi-illumination cues, including biased lighting, shadows, and self-occlusions in challenging in-the-wild scenes.
-✅ **Address the limitations of the orthographic projection assumption**: Introduces PS-Perp, a dataset with realistic perspective projection that enables learning of spatially varying view directions beyond the orthographic assumption.
-✅ **State-of-the-Art Performance**: Achieves superior quantitative and qualitative results across multiple datasets, particularly in complex in-the-wild scenarios.
-✅ **Open Source**: Code is publicly available for research and development.
+✅ **Robust Fine-Detail Normal Recovery**: GeoUniPS reconstructs sharp and accurate surface normals even with limited multi-illumination cues, including biased lighting, shadows, and self-occlusions in challenging in-the-wild scenes.  
+✅ **Address the limitations of the orthographic projection assumption**: Introduces PS-Perp, a dataset with realistic perspective projection that enables learning of spatially varying view directions beyond the orthographic assumption.  
+✅ **State-of-the-Art Performance**: Achieves superior quantitative and qualitative results across multiple datasets, particularly in complex in-the-wild scenarios.  
+✅ **Open Source**: Code is publicly available for research and development.  
 
 ---
 
