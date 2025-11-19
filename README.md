@@ -87,7 +87,7 @@ python geo_unips/main.py --session_name "path_to_output" --test_dir "path_to_inp
 If you find our work helpful, please consider citing:
 
 ```bibtex
-@misc{tam2025geounips,
+@misc{king2025geounips,
       title={Geometry Meets Light: Leveraging Geometric Priors for Universal Photometric Stereo under Limited Multi-Illumination Cues}, 
       author={King-Man Tam and Satoshi Ikehata and Yuta Asano and Zhaoyi An and Rei Kawakami},
       year={2025},
