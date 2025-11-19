@@ -144,36 +144,12 @@ class dataloader():
                 else:
                     mask = np.ones((h0, w0), np.float32)
 
-                    # print(f"[test] h0, w0: {h0}, {w0}")
-
-
-                    # rows, cols = np.nonzero(mask)
-                    # rowmin = np.min(rows)
-                    # rowmax = np.max(rows)
-                    # row = rowmax - rowmin
-                    # colmin = np.min(cols)
-                    # colmax = np.max(cols)
-                    # col = colmax - colmin
-                    # margin = 0
-
                     flag = False
 
                     r_s = 0
                     r_e = h0
                     c_s = 0
-                    c_e = w0
-                    
-                    # if row <= col and flag:
-                    #     r_s = rowmin-margin
-                    #     r_e = rowmax+margin
-                    #     c_s = int(0.5 * col) - int(0.5 * row)
-                    #     c_e = int(0.5 * col) + int(0.5 * row)
-                    # elif row > col and flag:
-                    #     r_s = int(0.5 * row) - int(0.5 * col)
-                    #     r_e = int(0.5 * row) + int(0.5 * col)
-                    #     c_s = colmin-margin
-                    #     c_e = colmax+margin                    
-                    # mask = mask[r_s:r_e,c_s:c_e]            
+                    c_e = w0      
 
             if flag:
                 img  = img[r_s:r_e, c_s:c_e, :] 

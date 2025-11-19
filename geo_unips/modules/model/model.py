@@ -1,3 +1,10 @@
+"""
+Geometry Meets Light: Leveraging Geometric Priors for Universal Photometric Stereo
+under Limited Multi-Illumination Cues (AAAI2026)
+# Copyright (c) 2025 King-Man Tam
+# All rights reserved.
+"""
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -94,7 +101,6 @@ class Net(nn.Module):
    
         """ Geometric Encoder """
         self.aggregator = Aggregator(aa_order=["frame", "global"]).to("cuda")
-        # self.aggregator.load_state_dict(torch.load("/gs/bs/tga-openv/marcot/photometric_stereo/sdm_vggt_final_2/vggt_aggregator_only.pt", weights_only=True), strict=True)
 
         self.light_aggregator = Aggregator(
                                     depth=12,
