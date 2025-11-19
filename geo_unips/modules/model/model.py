@@ -164,138 +164,170 @@ class Net(nn.Module):
         mode_change(self.regressor, False)
     
     @torch.no_grad()
+    
     def forward(self, I, M, nImgArray, decoder_resolution, canonical_resolution):     
         
-        decoder_resolution = decoder_resolution[0,0].cpu().numpy().astype(np.int32).item()
-        canonical_resolution = canonical_resolution[0,0].cpu().numpy().astype(np.int32).item()
+        # --- Parse decoder & canonical resolutions ---
+        decoder_resolution = decoder_resolution[0, 0].cpu().numpy().astype(np.int32).item()
+        canonical_resolution = canonical_resolution[0, 0].cpu().numpy().astype(np.int32).item()
 
-        """init"""
+        # --- Setup ---
         B, C, H, W, Nmax = I.shape
-
         start_enc = time.time()
 
-        """ Stage 1: Coarse Normal Prediction """
+        # -------------------------------------------------------
+        #  Stage 1: Coarse Normal Prediction (Encoder)
+        # -------------------------------------------------------
         agg_resolution = 518
-        img = I.permute(0, 4, 1, 2, 3)  # B, Nmax, C, H, W
+
+        # Reorder to (B, Nmax, C, H, W)
+        img = I.permute(0, 4, 1, 2, 3)
+
+        # Build valid-image index mask
         img_index = make_index_list(Nmax, nImgArray)
+
+        # Apply mask
         mask = M.unsqueeze(1).expand(-1, Nmax, 3, -1, -1)
-        img = img*mask
-        img = img.reshape(-1, img.shape[2], img.shape[3], img.shape[4])
-        I_dec = safe_interpolate(img, size=(decoder_resolution, decoder_resolution), mode='bilinear', align_corners=False)
-        img = safe_interpolate(img, size=(agg_resolution, agg_resolution), mode='bilinear', align_corners=False)
-        img = img.view(B, Nmax, C, agg_resolution, agg_resolution)
-        tokens_list, ps_idx = self.aggregator(img) # input: [B, Nmax, 3, 518, 518]
-        geometric_maps = self.geometric_extractor(tokens_list, img, ps_idx) # output: [B, Nmax, 128, 518, 518]
+        img = img * mask
+
+        # Merge batch * views
+        img_merged = img.reshape(-1, C, H, W)
+
+        # Resize for decoder and aggregator
+        I_dec = safe_interpolate(img_merged, size=(decoder_resolution, decoder_resolution),
+                                mode='bilinear', align_corners=False)
+        img_agg = safe_interpolate(img_merged, size=(agg_resolution, agg_resolution),
+                                mode='bilinear', align_corners=False)
+
+        # Restore (B, Nmax, C, ...)
+        img_agg = img_agg.view(B, Nmax, C, agg_resolution, agg_resolution)
+
+        # --- Geometric Features ---
+        tokens_list, ps_idx = self.aggregator(img_agg)
+        geometric_maps = self.geometric_extractor(tokens_list, img_agg, ps_idx)
         del tokens_list, ps_idx
-        tokens_list, ps_idx = self.light_aggregator(img) # input: [B, Nmax, 3, 518, 518]
-        photometric_maps = self.photometric_extractor(tokens_list, img, ps_idx) # output: [B, Nmax, 128, 518, 518]
-        del tokens_list, ps_idx, img
+
+        # --- Photometric Features ---
+        tokens_list, ps_idx = self.light_aggregator(img_agg)
+        photometric_maps = self.photometric_extractor(tokens_list, img_agg, ps_idx)
+        del tokens_list, ps_idx, img_agg
+
+        # --- Resize GLC Features ---
         geometric_maps = geometric_maps.reshape(-1, 128, 259, 259)
         photometric_maps = photometric_maps.reshape(-1, 128, 259, 259)
-        geometric_maps = safe_interpolate(geometric_maps, size=(256, 256), mode='bilinear', align_corners=False)
-        photometric_maps = safe_interpolate(photometric_maps, size=(256, 256), mode='bilinear', align_corners=False)
-        glc = torch.cat([geometric_maps, photometric_maps], dim=1) # [B*Nmax, 256, 256, 256]
+
+        geometric_maps = safe_interpolate(geometric_maps, size=(256, 256),
+                                        mode='bilinear', align_corners=False)
+        photometric_maps = safe_interpolate(photometric_maps, size=(256, 256),
+                                            mode='bilinear', align_corners=False)
+
+        # GLC = Geometry + Light
+        glc = torch.cat([geometric_maps, photometric_maps], dim=1)
         del geometric_maps, photometric_maps
 
         enc_time = time.time() - start_enc
         start_dec = time.time()
 
 
-        """ Sample Decoder at Original Resokution"""
-        I_dec = []
-        M_dec = []
-        N_dec = []
-        
-        img = I.permute(0, 4, 1, 2, 3).to(self.device)
-        mask = M 
-         
-        decoder_imgsize = (decoder_resolution, decoder_resolution)
-        img = img.reshape(-1, img.shape[2], img.shape[3], img.shape[4])
-        img = img[img_index==1, :, :, :]
-        I_dec = F.interpolate(img, size=decoder_imgsize, mode='bilinear', align_corners=False)  
-        M_dec = F.interpolate(mask, size=decoder_imgsize, mode='nearest')  
-       
-        C = img.shape[1]
-        H = decoder_imgsize[0]
-        W = decoder_imgsize[1]            
-    
-        nout = torch.zeros(B, H * W, 3).to(self.device)
-        bout = torch.zeros(B, H * W, 3).to(self.device)
-        rout = torch.zeros(B, H * W, 1).to(self.device)
-        mout = torch.zeros(B, H * W, 1).to(self.device)
+        # -------------------------------------------------------
+        #  Stage 2: High-Resolution Normal Prediction (Decoder)
+        # -------------------------------------------------------
 
-        if self.glc_smoothing:  
-            f_scale = decoder_resolution//canonical_resolution # (2048/256)
-            smoothing = gauss_filter.gauss_filter(glc.shape[1], 10 * f_scale+1, 1).to(glc.device) # channels, kernel_size, sigma
+        # Prepare input for decoder
+        img_full = I.permute(0, 4, 1, 2, 3).to(self.device)     # (B, Nmax, C, H, W)
+        mask_full = M
+
+        # Filter only valid views
+        img_full = img_full.reshape(-1, C, H, W)
+        img_full = img_full[img_index == 1]
+
+        # Resize for decoder
+        img_dec = F.interpolate(img_full, size=(decoder_resolution, decoder_resolution),
+                                mode='bilinear', align_corners=False)
+        M_dec = F.interpolate(mask_full, size=(decoder_resolution, decoder_resolution),
+                            mode='nearest')
+
+        # Decoder image sizes
+        C = img_full.shape[1]
+        H = decoder_resolution
+        W = decoder_resolution
+
+        # Output buffer
+        nout = torch.zeros(B, H * W, 3).to(self.device)
+
+        # Optional GLC smoothing
+        if self.glc_smoothing:
+            f_scale = decoder_resolution // canonical_resolution
+            smoothing = gauss_filter.gauss_filter(glc.shape[1],
+                                                10 * f_scale + 1,
+                                                1).to(glc.device)
             glc = smoothing(glc)
+
         p = 0
-        for b in range(B):                
-            target = range(p, p+nImgArray[b])
-            p = p+nImgArray[b]
-            m_ = M_dec[b, :, :, :].reshape(-1, H * W).permute(1,0)        
-            ids = np.nonzero(m_>0)[:,0]  
-            ids = ids[np.random.permutation(len(ids))]                               
+        for b in range(B):
+
+            # indices of valid images for this sample
+            target = range(p, p + nImgArray[b])
+            p += nImgArray[b]
+
+            # Mask (flatten)
+            m_flat = M_dec[b].reshape(-1, H * W).permute(1, 0)
+            ids = np.nonzero(m_flat > 0)[:, 0]
+            ids = ids[np.random.permutation(len(ids))]
+
+            # Split into pixel batches
             if len(ids) > self.pixel_samples:
                 num_split = len(ids) // self.pixel_samples + 1
                 idset = np.array_split(ids, num_split)
             else:
-                idset = [ids]     
+                idset = [ids]
 
-            o_ = I_dec[target, :, :, :].reshape(nImgArray[b], C, H * W).permute(2,0,1)  # [N, c, h, w]]
+            # Gather multi-view observations
+            o_full = img_dec[target].reshape(nImgArray[b], C, H * W).permute(2, 0, 1)
 
-
+            # ---- Pixel Sampling Loop ----
             for ids in idset:
 
-                o_ids = o_[ids, :, :]
-                """glc and normal sampling"""
-                coords = ind2coords(np.array((H, W)), ids).expand(Nmax,-1,-1,-1)
-                glc_ids = F.grid_sample(glc[target, :, :, :], coords.to(glc.device), mode='bilinear', align_corners=False).reshape(len(target), -1, len(ids)).permute(2,0,1) # [m, N, f]                   
-                coords = ind2coords(np.array((H, W)), ids)                  
-                
+                o_ids = o_full[ids]
 
-                """ recover base structure"""
-                """ glc_ids """
-                x = glc_ids # [len(ids), N, 256] # for base we only use the informaion in the canonical resolution
-                x = self.glc_upsample_base(x)            
-                x = self.glc_aggregation_base(x)  #[len(ids), 384]       
-                x_n_base, _, _ = self.regressor_base(x, len(ids))  #[len(ids), 3]       
-                x_n_base = F.normalize(x_n_base, dim=1, p=2) # base normal map
+                # GLC feature sampling
+                coords = ind2coords(np.array((H, W)), ids).expand(Nmax, -1, -1, -1)
+                glc_ids = F.grid_sample(glc[target], coords.to(glc.device),
+                                        mode='bilinear', align_corners=False)
+                glc_ids = glc_ids.reshape(len(target), -1, len(ids)).permute(2, 0, 1)
 
-                """ recover fine structure"""
-                """ glc_ids """
-                o_ids = self.img_embedding(o_ids)
-                x = torch.cat([o_ids, glc_ids], dim=2) # [len(ids), N, 256+embed_dim+3]
-                glc_ids = self.glc_upsample(x)            
-                x = torch.cat([o_ids, glc_ids], dim=2) # [len(ids), N, 256+embed_dim+3]
-                x = self.glc_aggregation(x)  # [len(ids), 384]       
-                x_n, _, _ = self.regressor(torch.cat([x, x_n_base], dim=1), len(ids))  #[len(ids), 3]    
+                # Convert coords again
+                coords = ind2coords(np.array((H, W)), ids)
 
-                x_n = F.normalize(x_n, dim=1, p=2)
-                # G_n = n_[ids, :]
+                # -------------------------------------------------------
+                #  Base Normal (canonical 256x256)
+                # -------------------------------------------------------
+                x_base = self.glc_upsample_base(glc_ids)
+                x_base = self.glc_aggregation_base(x_base)
+                x_n_base, _, _ = self.regressor_base(x_base, len(ids))
+                x_n_base = F.normalize(x_n_base, dim=1)
 
-                # if self.mode == "Test":
-                #     if self.target == 'normal':
-                #         nout_base[b, ids, :] = x_n_base.detach().cpu()
-                #         nout[b, ids, :] = x_n.detach().cpu()
-                # else:
-                #     if self.target == 'normal':
-                #         loss += self.criterionL2(x_n_base, G_n_base)
-                #         loss += self.criterionL2(x_n, G_n)
-                #     loss_batch.append(loss)
+                # -------------------------------------------------------
+                #  Fine Normal (original resolution)
+                # -------------------------------------------------------
+                o_ids_embed = self.img_embedding(o_ids)
+                x = torch.cat([o_ids_embed, glc_ids], dim=2)
 
+                glc_up = self.glc_upsample(x)
+                x = torch.cat([o_ids_embed, glc_up], dim=2)
+
+                x = self.glc_aggregation(x)
+                x_n, _, _ = self.regressor(torch.cat([x, x_n_base], dim=1), len(ids))
+                x_n = F.normalize(x_n, dim=1)
+
+                # Store normal
                 if self.target == 'normal':
-                    nout[b, ids, :] = x_n.detach()  
+                    nout[b, ids] = x_n.detach()
 
-
+        # Restore (B, 3, H, W)
         nout = nout.permute(0, 2, 1).reshape(B, 3, H, W)
-        bout = bout.permute(0, 2, 1).reshape(B, 3, H, W)
-        rout = rout.permute(0, 2, 1).reshape(B, 1, H, W)
-        mout = mout.permute(0, 2, 1).reshape(B, 1, H, W)
 
         dec_time = time.time() - start_dec
-
         print(f"[Timing] Encoder: {enc_time:.3f}s, Decoder: {dec_time:.3f}s")
-  
-        return nout, bout, rout, mout
 
-
+        return nout

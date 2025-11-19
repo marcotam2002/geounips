@@ -4,7 +4,6 @@ Scalable, Detailed and Mask-free Universal Photometric Stereo Network (CVPR2023)
 # All rights reserved.
 """
 
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import math
@@ -52,31 +51,4 @@ def merge_tensor_spatial(x, method='tile_stride'):
         x = x.permute(0, 3, 1, 4, 2, 5)
         x = x.reshape(N, feat_dim, mosaic_scale * Hm, mosaic_scale * Wm)
         return x
-
-def divide_overlapping_patches(input_tensor, patch_size, margin):
-    B, C, W, _ = input_tensor.shape
-    stride = patch_size - margin
-    padded_W = ((W - patch_size + stride - 1) // stride) * stride + patch_size
-    pad = padded_W - W
-
-    padded_tensor = F.pad(input_tensor, (0, pad, 0, pad), mode='constant', value=0)
-
-    patches = F.unfold(padded_tensor, kernel_size=patch_size, stride=stride)
-    patches = patches.view(B, C, patch_size, patch_size, -1).permute(0, 4, 1, 2, 3)
-
-    return patches
-
-def merge_overlappnig_patches(patches, patch_size, margin, original_size):
-    B, _, C, _, _ = patches.shape
-    stride = patch_size - margin
-    W = original_size[2]
-
-    patches = patches.permute(0, 2, 3, 4, 1).contiguous().view(B, C * patch_size * patch_size, -1)
-    output = F.fold(patches, (W, W), kernel_size=patch_size, stride=stride)  
-
-    weight = torch.ones(patches.size()).to(patches.device)
-    weight = F.fold(weight, (W, W), kernel_size=patch_size, stride=stride)
-
-    output = output / weight
-    return output
 

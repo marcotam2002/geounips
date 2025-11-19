@@ -1,9 +1,9 @@
 """
-Scalable, Detailed and Mask-free Universal Photometric Stereo Network (CVPR2023)
-# Copyright (c) 2023 Satoshi Ikehata
+Geometry Meets Light: Leveraging Geometric Priors for Universal Photometric Stereo
+under Limited Multi-Illumination Cues (AAAI2026)
+# Copyright (c) 2025 King-Man Tam
 # All rights reserved.
 """
-
 
 import torch
 import torch.nn.functional as F
@@ -21,7 +21,7 @@ class builder():
    
         self.device = device
         self.args = args               
-        """Load pretrained model (normal or brdf)"""
+        """Load pretrained model"""
         if 'normal' in args.target:
             model_dir = f'{args.checkpoint}/normal'
             self.net_nml = model.Net(args.pixel_samples, 'normal', device).to(self.device)
@@ -29,13 +29,6 @@ class builder():
             self.net_nml = self.load_models(self.net_nml, model_dir)
             self.net_nml.module.no_grad()
 
-            
-        if 'brdf' in args.target:
-            model_dir = f'{args.checkpoint}/brdf'
-            self.net_brdf = model.Net(args.pixel_samples, 'brdf', device).to(self.device)
-            self.net_brdf = torch.nn.DataParallel(self.net_brdf)
-            self.net_brdf = self.load_models(self.net_brdf, model_dir)
-            self.net_brdf.module.no_grad()
         print('')
 
         print(f"canonical resolution: {self.args.canonical_resolution} x {self.args.canonical_resolution}  ")
@@ -95,9 +88,6 @@ class builder():
                     patches_M = decompose_tensors.divide_tensor_spatial(M, block_size=patch_size, method='tile_stride')
                     
                     patches_nml = []
-                    patches_base = []
-                    patches_rough = []
-                    patches_metal = []
 
                     for k in range(sliding_blocks):
                         print(f"Recovering {self.args.target} map(s): {k+1} / {sliding_blocks}")
@@ -106,52 +96,25 @@ class builder():
                             pI = F.interpolate(pI.permute(0,4,1,2,3).reshape(-1, pI.shape[1],pI.shape[2],pI.shape[3]), size=(patch_size, patch_size), mode='bilinear', align_corners=True).reshape(B, Nimg, C, patch_size, patch_size).permute(0,2,3,4,1)
                             pM = F.interpolate(patches_M[:, k, :, :, :], size=(patch_size, patch_size), mode='bilinear', align_corners=True)
                             nout = torch.zeros((B, 3, patch_size, patch_size))
-                            bout = torch.zeros((B, 3, patch_size, patch_size))
-                            rout = torch.zeros((B, 1, patch_size, patch_size))
-                            mout = torch.zeros((B, 1, patch_size, patch_size))
                             if 'normal' in self.args.target:
-                                nout, _, _, _  = self.net_nml(pI, pM, nImgArray.reshape(-1,1), decoder_resolution = patch_size * torch.ones(pI.shape[0],1), canonical_resolution=canonical_resolution* torch.ones(pI.shape[0],1))
+                                nout = self.net_nml(pI, pM, nImgArray.reshape(-1,1), decoder_resolution = patch_size * torch.ones(pI.shape[0],1), canonical_resolution=canonical_resolution* torch.ones(pI.shape[0],1))
                                 nout = (F.interpolate(nout, size=(patch_size, patch_size), mode='bilinear', align_corners=True) * pM).cpu()
     
-                            if 'brdf' in self.args.target:
-                                _, bout, rout, mout  = self.net_brdf(pI, pM, nImgArray.reshape(-1,1), decoder_resolution = patch_size * torch.ones(pI.shape[0],1), canonical_resolution=canonical_resolution* torch.ones(pI.shape[0],1))
-                                bout = F.interpolate(bout, size=(patch_size, patch_size), mode='bilinear', align_corners=True).cpu()
-                                rout = F.interpolate(rout, size=(patch_size, patch_size), mode='bilinear', align_corners=True).cpu()
-                                mout = F.interpolate(mout, size=(patch_size, patch_size), mode='bilinear', align_corners=True).cpu()
                             patches_nml.append(nout)
-                            patches_base.append(bout)
-                            patches_rough.append(rout)
-                            patches_metal.append(mout)
                         else:
                             patches_nml.append(torch.zeros((B, 3, patch_size, patch_size)))   
-                            patches_base.append(torch.zeros((B, 3, patch_size, patch_size)))     
-                            patches_rough.append(torch.zeros((B, 1, patch_size, patch_size)))          
-                            patches_metal.append(torch.zeros((B, 1, patch_size, patch_size)))           
+           
                     patches_nml = torch.stack(patches_nml, dim=1)
-                    patches_base = torch.stack(patches_base, dim=1)
-                    patches_rough = torch.stack(patches_rough, dim=1)
-                    patches_metal = torch.stack(patches_metal, dim=1)
                     merged_tensor_nml = decompose_tensors.merge_tensor_spatial(patches_nml.permute(1,0,2,3,4), method='tile_stride')
-                    merged_tensor_base = decompose_tensors.merge_tensor_spatial(patches_base.permute(1,0,2,3,4), method='tile_stride')
-                    merged_tensor_rough = decompose_tensors.merge_tensor_spatial(patches_rough.permute(1,0,2,3,4), method='tile_stride')
-                    merged_tensor_metal = decompose_tensors.merge_tensor_spatial(patches_metal.permute(1,0,2,3,4), method='tile_stride')
                     nml = merged_tensor_nml.squeeze().permute(1,2,0)
-                    base = merged_tensor_base.squeeze().permute(1,2,0)
-                    rough = merged_tensor_rough.squeeze()
-                    metal = merged_tensor_metal.squeeze()
+
                 else:
                     print(f"Recovering {self.args.target} map(s) 1 / 1")
                     if 'normal' in self.args.target:
-                        nout, _, _, _  = self.net_nml(I, M, nImgArray.reshape(-1,1), decoder_resolution=testdata.data.h * torch.ones(I.shape[0],1), canonical_resolution=canonical_resolution* torch.ones(I.shape[0],1))
+                        nout = self.net_nml(I, M, nImgArray.reshape(-1,1), decoder_resolution=testdata.data.h * torch.ones(I.shape[0],1), canonical_resolution=canonical_resolution* torch.ones(I.shape[0],1))
                         nml = (nout * M.to(nout.device)).squeeze().permute(1, 2, 0).cpu().detach()
                         del nout
                     
-                    if 'brdf' in self.args.target:
-                        _, bout, rout, mout  = self.net_brdf(I, M, nImgArray.reshape(-1,1), decoder_resolution = testdata.data.h * torch.ones(I.shape[0],1), canonical_resolution=canonical_resolution* torch.ones(I.shape[0],1))
-                        base = (bout * M).squeeze().permute(1,2,0).cpu().detach()
-                        rough = (rout * M).squeeze().cpu().detach()
-                        metal = (mout * M).squeeze().cpu().detach()
-                        del bout, rout, mout
                 
                 # save normal of original resolution
                 if 'normal' in self.args.target:
