@@ -65,21 +65,8 @@ class dataloader():
                 h0 = img.shape[0]
                 w0 = img.shape[1]
                 margin = self.mask_margin
-                
-                nml_path_diligent = img_dir + '/normal.png'
-                nml_path_tif = img_dir + '/normal.tif'
-                nml_path_others = img_dir + '/gt_normal.png'
-                if os.path.isfile(nml_path_diligent):
-                    nml_path = nml_path_diligent
-                elif os.path.isfile(nml_path_tif):
-                    nml_path = nml_path_tif
-                elif os.path.isfile(nml_path_others):
-                    nml_path = nml_path_others
-                else:
-                    nml_path = "no_normal"
 
-
-                # print(f"[test] We use the normal path: {nml_path}")
+                nml_path = img_dir + '/gt_normal.png'
 
                 # if ground truth normal map is avelable, generate normal-based mask               
                 mask_flag = False
@@ -106,8 +93,6 @@ class dataloader():
 
                 # Keep mask and normal of the original resolution
                 n_true = N
-
-                # print(f"[test] Normal range: min = {n_true.min():.6f}, max = {n_true.max():.6f}")
 
                 # Based on object mask, crop boudning rectangular area 
                 if  mask_flag == True:

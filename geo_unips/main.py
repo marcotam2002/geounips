@@ -52,7 +52,7 @@ def main():
     end_time = time.time()
     print(f"Prediction finished (Elapsed time is {end_time - start_time:.3f} sec)")
     print("\nNormal estimation completed. The predicted normal maps are saved at:\n")
-    print(f"        ./{args.session_name}/results/{test_data.data.objname}\n")
+    print(f"        ./{args.session_name}/results\n")
 
 
 
