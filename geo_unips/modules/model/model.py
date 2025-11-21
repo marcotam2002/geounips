@@ -39,18 +39,13 @@ class GLC_Aggregation(nn.Module):
         return x
 
 class Regressor(nn.Module):
-    def __init__(self, input_nc, num_enc_sab=1, use_efficient_attention=False, dim_feedforward=256, output='normal'):
+    def __init__(self, input_nc, num_enc_sab=1, use_efficient_attention=False, dim_feedforward=256):
         super(Regressor, self).__init__()     
         # Communication among different samples (Pixel-Sampling Transformer)
         # not sure here
         self.dim_hidden = 384
         self.comm = transformer.CommunicationBlock(input_nc, num_enc_sab = num_enc_sab, dim_hidden=self.dim_hidden, ln=True, dim_feedforward = dim_feedforward, use_efficient_attention=use_efficient_attention)   
         self.prediction_normal = PredictionHead(self.dim_hidden, 3)
-        self.target = output
-        if output == 'brdf':   
-            self.prediction_base = PredictionHead(self.dim_hidden, 3) # No urcainty
-            self.prediction_rough = PredictionHead(self.dim_hidden, 1)
-            self.prediction_metal = PredictionHead(self.dim_hidden, 1)
 
     def forward(self, x, num_sample_set):
         """Standard forward
@@ -72,10 +67,7 @@ class Regressor(nn.Module):
             x = torch.cat([x_1, x_2], dim=0)
 
         x_n = self.prediction_normal(x)        
-        if self.target == 'brdf':
-            x_brdf = (self.prediction_base(x), self.prediction_rough(x), self.prediction_metal(x))
-        else:
-            x_brdf = []
+        x_brdf = []
         return x_n, x_brdf, x
     
 class PredictionHead(nn.Module):
@@ -91,10 +83,9 @@ class PredictionHead(nn.Module):
         return self.regression(x)
 
 class Net(nn.Module):
-    def __init__(self, pixel_samples, output, device):
+    def __init__(self, pixel_samples, device):
         super().__init__()
         self.device = device
-        self.target = output
         self.pixel_samples = pixel_samples
         self.glc_smoothing = True
 
@@ -136,12 +127,12 @@ class Net(nn.Module):
         # for low-res structure (H/4 x W/4)
         self.glc_upsample_base = GLC_Upsample(256, num_enc_sab=1, dim_hidden=256, dim_feedforward=1024, use_efficient_attention=True).to(self.device) 
         self.glc_aggregation_base = GLC_Aggregation(256, num_agg_transformer=2, dim_aggout=384, dim_feedforward=1024, use_efficient_attention=False).to(self.device) 
-        self.regressor_base = Regressor(384, num_enc_sab=1, use_efficient_attention=True, dim_feedforward=1024, output=self.target).to(self.device) 
+        self.regressor_base = Regressor(384, num_enc_sab=1, use_efficient_attention=True, dim_feedforward=1024).to(self.device) 
 
         # for high-res strucure (H x W)
         self.glc_upsample = GLC_Upsample(256+256, num_enc_sab=1, dim_hidden=256, dim_feedforward=1024, use_efficient_attention=True).to(self.device) 
         self.glc_aggregation = GLC_Aggregation(256+256, num_agg_transformer=2, dim_aggout=384, dim_feedforward=1024, use_efficient_attention=False).to(self.device) 
-        self.regressor = Regressor(384+3, num_enc_sab=1, use_efficient_attention=True, dim_feedforward=1024, output=self.target).to(self.device) 
+        self.regressor = Regressor(384+3, num_enc_sab=1, use_efficient_attention=True, dim_feedforward=1024).to(self.device) 
 
         self.img_embedding = nn.Sequential(
             nn.Linear(3,32),
@@ -321,8 +312,7 @@ class Net(nn.Module):
                 x_n = F.normalize(x_n, dim=1)
 
                 # Store normal
-                if self.target == 'normal':
-                    nout[b, ids] = x_n.detach()
+                nout[b, ids] = x_n.detach()
 
         # Restore (B, 3, H, W)
         nout = nout.permute(0, 2, 1).reshape(B, 3, H, W)

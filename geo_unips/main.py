@@ -12,6 +12,7 @@ from modules.io import dataio
 import sys
 import argparse
 import time
+import torch
 
 sys.path.append('..')  # add parent directly for importing
 
@@ -20,7 +21,6 @@ parser = argparse.ArgumentParser()
 
 # Properties
 parser.add_argument('--session_name', default='geo_unips')
-parser.add_argument('--target', default='normal', choices=['normal'])
 parser.add_argument('--checkpoint', default='checkpoint')
 
 # Data Configuration
@@ -40,10 +40,9 @@ parser.add_argument('--scalable', action='store_true')
 def main():
     args = parser.parse_args()
     print(f'\nStarting a session: {args.session_name}')
-    print(f'target: {args.target}\n')
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     geo_unips = builder.builder(args, device)
-    test_data = dataio.dataio('Test', args)
+    test_data = dataio.dataio(args)
 
     start_time = time.time()
     geo_unips.run(testdata=test_data,

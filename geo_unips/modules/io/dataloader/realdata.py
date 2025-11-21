@@ -11,12 +11,11 @@ import cv2
 import re
 
 class dataloader():
-    def __init__(self, numberOfImages = None, outdir = '.', mask_margin=16, ctype='ORTHO'):
+    def __init__(self, numberOfImages = None, outdir = '.', mask_margin=16):
         self.mask_margin=mask_margin
         self.numberOfImages = numberOfImages
         self.outdir = outdir
         self.use_mask = True
-        self.ctype = ctype
 
     def img_tile(self, imgs, rows, cols, outdir): # [N, h, w, c]
         n, h, w, c = np.shape(imgs)
@@ -29,7 +28,7 @@ class dataloader():
             os.makedirs(outdir, exist_ok=True)
             cv2.imwrite(f'{outdir}/tiled.png', (255 * img_tiled[:,:,::-1]).astype(np.uint8))
     
-    def load(self, objdir, prefix, margin = 0, max_image_resolution = 2048, aug=[]):
+    def load(self, objdir, prefix, max_image_resolution = 2048):
 
         self.objname = re.split(r'\\|/',objdir)[-1]
         self.data_workspace = f'{self.outdir}/results/{self.objname}'
@@ -54,7 +53,7 @@ class dataloader():
             indexset = np.random.permutation(len(directlist))[:self.numberOfImages]
         else:
             indexset = range(len(directlist))
-        numberOfImages = np.min([len(indexset), self.numberOfImages])
+        numberOfImages = len(indexset)
         print(f"image index: {indexset}")
 
         for i, indexofimage in enumerate(indexset):

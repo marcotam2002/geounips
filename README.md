@@ -70,14 +70,14 @@ pip install opencv-python
 
 ### 3. Download the Model Weights
 
-Download the checkpoint file from [this link](https://drive.google.com/file/d/1GWcdvsLMpjfaqWEvAskf7Tn1Nvv-KeKE/view?usp=sharing) and place it at `checkpoint/normal/ckpt.pytmodel`.
+Download the checkpoint file from [this link](https://drive.google.com/file/d/1GWcdvsLMpjfaqWEvAskf7Tn1Nvv-KeKE/view?usp=sharing) and place it at `checkpoint/ckpt.pytmodel`.
 
 ### 4. 🏁 **Quick Start** 
 
 Once everything is set up, run the demo script with the following command. The --session_name argument specifies the output folder, and the --test_dir argument specifies the input image folder:
 
 ```bash
-python geo_unips/main.py --session_name "path_to_output" --test_dir "path_to_input" --checkpoint checkpoint --max_image_num 4 --max_image_res 2048 --scalable --target normal
+python geo_unips/main.py --session_name "path_to_output" --test_dir "path_to_input" --checkpoint checkpoint --max_image_num 4 --max_image_res 2048 --scalable
 ```
 
 ---

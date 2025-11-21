@@ -22,12 +22,11 @@ class builder():
         self.device = device
         self.args = args               
         """Load pretrained model"""
-        if 'normal' in args.target:
-            model_dir = f'{args.checkpoint}/normal'
-            self.net_nml = model.Net(args.pixel_samples, 'normal', device).to(self.device)
-            self.net_nml = torch.nn.DataParallel(self.net_nml)
-            self.net_nml = self.load_models(self.net_nml, model_dir)
-            self.net_nml.module.no_grad()
+        model_dir = f'{args.checkpoint}'
+        self.net_nml = model.Net(args.pixel_samples, device).to(self.device)
+        self.net_nml = torch.nn.DataParallel(self.net_nml)
+        self.net_nml = self.load_models(self.net_nml, model_dir)
+        self.net_nml.module.no_grad()
 
         print('')
 
@@ -90,15 +89,14 @@ class builder():
                     patches_nml = []
 
                     for k in range(sliding_blocks):
-                        print(f"Recovering {self.args.target} map(s): {k+1} / {sliding_blocks}")
+                        print(f"Recovering normal map(s): {k+1} / {sliding_blocks}")
                         if torch.sum(patches_M[:, k, :, :, :]) > 0:
                             pI = patches_I[:, k, :, :, :,:]
                             pI = F.interpolate(pI.permute(0,4,1,2,3).reshape(-1, pI.shape[1],pI.shape[2],pI.shape[3]), size=(patch_size, patch_size), mode='bilinear', align_corners=True).reshape(B, Nimg, C, patch_size, patch_size).permute(0,2,3,4,1)
                             pM = F.interpolate(patches_M[:, k, :, :, :], size=(patch_size, patch_size), mode='bilinear', align_corners=True)
                             nout = torch.zeros((B, 3, patch_size, patch_size))
-                            if 'normal' in self.args.target:
-                                nout = self.net_nml(pI, pM, nImgArray.reshape(-1,1), decoder_resolution = patch_size * torch.ones(pI.shape[0],1), canonical_resolution=canonical_resolution* torch.ones(pI.shape[0],1))
-                                nout = (F.interpolate(nout, size=(patch_size, patch_size), mode='bilinear', align_corners=True) * pM).cpu()
+                            nout = self.net_nml(pI, pM, nImgArray.reshape(-1,1), decoder_resolution = patch_size * torch.ones(pI.shape[0],1), canonical_resolution=canonical_resolution* torch.ones(pI.shape[0],1))
+                            nout = (F.interpolate(nout, size=(patch_size, patch_size), mode='bilinear', align_corners=True) * pM).cpu()
     
                             patches_nml.append(nout)
                         else:
@@ -109,38 +107,36 @@ class builder():
                     nml = merged_tensor_nml.squeeze().permute(1,2,0)
 
                 else:
-                    print(f"Recovering {self.args.target} map(s) 1 / 1")
-                    if 'normal' in self.args.target:
-                        nout = self.net_nml(I, M, nImgArray.reshape(-1,1), decoder_resolution=testdata.data.h * torch.ones(I.shape[0],1), canonical_resolution=canonical_resolution* torch.ones(I.shape[0],1))
-                        nml = (nout * M.to(nout.device)).squeeze().permute(1, 2, 0).cpu().detach()
-                        del nout
+                    print(f"Recovering normal map(s) 1 / 1")
+                    nout = self.net_nml(I, M, nImgArray.reshape(-1,1), decoder_resolution=testdata.data.h * torch.ones(I.shape[0],1), canonical_resolution=canonical_resolution* torch.ones(I.shape[0],1))
+                    nml = (nout * M.to(nout.device)).squeeze().permute(1, 2, 0).cpu().detach()
+                    del nout
                     
                 
                 # save normal of original resolution
-                if 'normal' in self.args.target:
-                    nml = nml.cpu().numpy()                
-                    nml = cv2.resize(nml, dsize=(c_e-c_s, r_e-r_s), interpolation=cv2.INTER_CUBIC)
-                    mask = np.float32(np.abs(1 - np.sqrt(np.sum(nml * nml, axis=2))) < 0.5)
-                    nml = np.divide(nml, np.linalg.norm(nml, axis=2, keepdims=True) + 1.0e-12)
-                    nml = nml * mask[:, :, np.newaxis]
-                    nout = np.zeros((h_, w_, 3), np.float32)
-                    nout[r_s:r_e, c_s:c_e,:] = nml
+                nml = nml.cpu().numpy()                
+                nml = cv2.resize(nml, dsize=(c_e-c_s, r_e-r_s), interpolation=cv2.INTER_CUBIC)
+                mask = np.float32(np.abs(1 - np.sqrt(np.sum(nml * nml, axis=2))) < 0.5)
+                nml = np.divide(nml, np.linalg.norm(nml, axis=2, keepdims=True) + 1.0e-12)
+                nml = nml * mask[:, :, np.newaxis]
+                nout = np.zeros((h_, w_, 3), np.float32)
+                nout[r_s:r_e, c_s:c_e,:] = nml
 
-                    if torch.sum(N) > 0:
-                        n_true = N.permute(0,2,3,1).squeeze().cpu().numpy()
-                        mask = np.float32(np.abs(1 - np.sqrt(np.sum(n_true * n_true, axis=2))) < 0.5)
-                        mae, emap = compute_mae.compute_mae_np(nout, n_true, mask = mask)
-                        mae_list.append(mae)
-                        print(f"Mean Angular Error (MAE) is {mae:.3f}\n")                        
-                        emap = emap.squeeze()
-                        thresh = 90
-                        emap[emap>=thresh] = thresh
-                        emap = emap/thresh
-                        cv2.imwrite(f'{testdata.data.data_workspace}/error.png', 255*emap)     
-                    
-                    cv2.imwrite(f'{testdata.data.data_workspace}/normal.png', 255*(0.5 * (1+nout[:,:,::-1])))     
+                if torch.sum(N) > 0:
+                    n_true = N.permute(0,2,3,1).squeeze().cpu().numpy()
+                    mask = np.float32(np.abs(1 - np.sqrt(np.sum(n_true * n_true, axis=2))) < 0.5)
+                    mae, emap = compute_mae.compute_mae_np(nout, n_true, mask = mask)
+                    mae_list.append(mae)
+                    print(f"Mean Angular Error (MAE) is {mae:.3f}\n")                        
+                    emap = emap.squeeze()
+                    thresh = 90
+                    emap[emap>=thresh] = thresh
+                    emap = emap/thresh
+                    cv2.imwrite(f'{testdata.data.data_workspace}/error.png', 255*emap)     
+                
+                cv2.imwrite(f'{testdata.data.data_workspace}/normal.png', 255*(0.5 * (1+nout[:,:,::-1])))     
 
-                    cv2.imwrite(f'{testdata.data.data_workspace}/mask.png', 255*mask)                                  
+                cv2.imwrite(f'{testdata.data.data_workspace}/mask.png', 255*mask)                                  
 
 
             end_time = time.time() 

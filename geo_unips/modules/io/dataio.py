@@ -10,24 +10,15 @@ from .dataloader import realdata
 import numpy as np
 
 class dataio(data.Dataset):
-    def __init__(self, mode, args):
-        self.mode = mode
+    def __init__(self, args):
         data_root = args.test_dir
         extension = args.test_ext
         self.numberOfImageBuffer = args.max_image_num
         self.prefix= args.test_prefix
         self.mask_margin = args.mask_margin
         self.outdir = args.session_name
-        self.data_root = data_root
-        self.extension = extension
-        self.data_name = []
-        self.set_id = []
-        self.valid = []
-        self.sample_id = []
-        self.dataCount = 0
-        self.dataLength = -1
-        self.mode = mode
         self.max_image_resolution = None
+        
         
         print('Exploring %s' % (data_root))
         objlist = glob.glob(f"{data_root}/*{extension}")
