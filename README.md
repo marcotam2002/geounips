@@ -30,10 +30,10 @@
 ---
 
 ## 📌 **Highlights**  
-✅ **Robust Fine-Detail Normal Recovery**: GeoUniPS reconstructs sharp and accurate surface normals even with limited multi-illumination cues, including biased lighting, shadows, and self-occlusions in challenging in-the-wild scenes.
-✅ **Address the limitations of the orthographic projection assumption**: Introduces PS-Perp, a dataset with realistic perspective projection that enables learning of spatially varying view directions beyond the orthographic assumption.
-✅ **State-of-the-Art Performance**: Achieves superior quantitative and qualitative results across multiple datasets, particularly in complex in-the-wild scenarios.
-✅ **Open Source**: Code is publicly available for research and development.
+✅ **Robust Fine-Detail Normal Recovery**: GeoUniPS reconstructs sharp and accurate surface normals even with limited multi-illumination cues, including biased lighting, shadows, and self-occlusions in challenging in-the-wild scenes.  
+✅ **Address the limitations of the orthographic projection assumption**: Introduces PS-Perp, a dataset with realistic perspective projection that enables learning of spatially varying view directions beyond the orthographic assumption.  
+✅ **State-of-the-Art Performance**: Achieves superior quantitative and qualitative results across multiple datasets, particularly in complex in-the-wild scenarios.  
+✅ **Open Source**: Code is publicly available for research and development.  
 
 ---
 
@@ -87,7 +87,7 @@ python geo_unips/main.py --session_name "path_to_output" --test_dir "path_to_inp
 If you find our work helpful, please consider citing:
 
 ```bibtex
-@misc{tam2025geounips,
+@misc{kmtam2025geounips,
       title={Geometry Meets Light: Leveraging Geometric Priors for Universal Photometric Stereo under Limited Multi-Illumination Cues}, 
       author={King-Man Tam and Satoshi Ikehata and Yuta Asano and Zhaoyi An and Rei Kawakami},
       year={2025},
