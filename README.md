@@ -77,7 +77,7 @@ Download the checkpoint file from [this link](https://drive.google.com/file/d/1G
 Once everything is set up, run the demo script with the following command. The --session_name argument specifies the output folder, and the --test_dir argument specifies the input image folder:
 
 ```bash
-python geo_unips/main.py --session_name "path_to_output" --test_dir "path_to_input" --checkpoint checkpoint --max_image_num 4 --max_image_res 2048 --scalable
+python geo_unips/main.py --session_name "test_data" --test_dir "assets" --checkpoint checkpoint --max_image_num 1 --max_image_res 512 --scalable
 ```
 
 ---
