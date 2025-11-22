@@ -27,22 +27,19 @@
     </a>
 </p>
 
----
-
-## 📌 **Highlights**  
-✅ **Robust Fine-Detail Normal Recovery**: GeoUniPS reconstructs sharp and accurate surface normals even with limited multi-illumination cues, including biased lighting, shadows, and self-occlusions in challenging in-the-wild scenes.  
-✅ **Address the limitations of the orthographic projection assumption**: Introduces PS-Perp, a dataset with realistic perspective projection that enables learning of spatially varying view directions beyond the orthographic assumption.  
-✅ **State-of-the-Art Performance**: Achieves superior quantitative and qualitative results across multiple datasets, particularly in complex in-the-wild scenarios.  
-✅ **Open Source**: Code is publicly available for research and development.  
+![Cover](/figures/teaser.png)
 
 ---
 
-## ⏳ **Timeline**  
+## 📖 **Overview**  
 
-- ✅ **2025-11-17** - 🛠️ Repository initialized with documentation.  
-- ✅ **2025-11-18** - 📄 Paper available on arXiv.  
-- ✅ **2025-11-20** - 🚀 Provide core codebase, testing subset, and pre-trained models for evaluation.  
-- TODO: Provide detailed testing instructions.
+We present `GeoUniPS`, a `universal photometric stereo` network that integrates synthetic supervision with high-level geometric priors from large-scale 3D reconstruction models pretrained on massive in-the-wild data. Our **key insight** is that these 3D reconstruction models serve as visual-geometry foundation models, inherently encoding rich geometric knowledge of real scenes.
+
+![Pipeline](/figures/pipeline.png)
+
+GeoUniPS delivers state-of-the-arts performance across multiple datasets, both quantitatively and qualitatively, especially in the complex in-the-wild scenes.
+
+![Result](/figures/multi_ill.png)
 
 ---
 
@@ -79,6 +76,15 @@ Once everything is set up, run the demo script with the following command. The -
 ```bash
 python geo_unips/main.py --session_name "test_data" --test_dir "assets" --checkpoint checkpoint --max_image_num 1 --max_image_res 512 --scalable
 ```
+
+---
+
+## ⏳ **Timeline**  
+
+- ✅ **2025-11-17** - 🛠️ Repository initialized.  
+- ✅ **2025-11-18** - 📄 Paper available on arXiv.  
+- ✅ **2025-11-20** - 🚀 Provide core codebase, testing subset, and pre-trained models for evaluation.  
+- ✅ **2025-11-22** - 📝 Added a overview for GeoUniPS with illustrative figures.
 
 ---
 
