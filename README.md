@@ -27,6 +27,8 @@
     </a>
 </p>
 
+![Cover](/figures/teaser.png)
+
 ---
 
 ## 🚀 **Installation & Usage**
@@ -64,8 +66,6 @@ python geo_unips/main.py --session_name "test_data" --test_dir "assets" --checkp
 ```
 
 ---
-
-![Cover](/figures/teaser.png)
 
 ## 📖 **Overview**  
 
