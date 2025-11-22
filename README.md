@@ -27,20 +27,6 @@
     </a>
 </p>
 
-![Cover](/figures/teaser.png)
-
----
-
-## 📖 **Overview**  
-
-We present `GeoUniPS`, a `universal photometric stereo` network that integrates synthetic supervision with high-level geometric priors from large-scale 3D reconstruction models pretrained on massive in-the-wild data. Our **key insight** is that these 3D reconstruction models serve as visual-geometry foundation models, inherently encoding rich geometric knowledge of real scenes.
-
-![Pipeline](/figures/pipeline.png)
-
-GeoUniPS delivers state-of-the-arts performance across multiple datasets, both quantitatively and qualitatively, especially in the complex in-the-wild scenes.
-
-![Result](/figures/multi_ill.png)
-
 ---
 
 ## 🚀 **Installation & Usage**
@@ -76,6 +62,20 @@ Once everything is set up, run the demo script with the following command. The -
 ```bash
 python geo_unips/main.py --session_name "test_data" --test_dir "assets" --checkpoint checkpoint --max_image_num 1 --max_image_res 512 --scalable
 ```
+
+---
+
+![Cover](/figures/teaser.png)
+
+## 📖 **Overview**  
+
+We present `GeoUniPS`, a `universal photometric stereo` network that integrates synthetic supervision with high-level geometric priors from large-scale 3D reconstruction models pretrained on massive in-the-wild data. Our **key insight** is that these 3D reconstruction models serve as visual-geometry foundation models, inherently encoding rich geometric knowledge of real scenes.
+
+![Pipeline](/figures/pipeline.png)
+
+GeoUniPS delivers state-of-the-arts performance across multiple datasets, both quantitatively and qualitatively, especially in the complex in-the-wild scenes.
+
+![Result](/figures/multi_ill.png)
 
 ---
 
