@@ -124,7 +124,7 @@ class Net(nn.Module):
             pos_embed=False,
         ).to(self.device) 
 
-        # for low-res structure (H/4 x W/4)
+        # for low-res structure (H/2 x W/2)
         self.glc_upsample_base = GLC_Upsample(256, num_enc_sab=1, dim_hidden=256, dim_feedforward=1024, use_efficient_attention=True).to(self.device) 
         self.glc_aggregation_base = GLC_Aggregation(256, num_agg_transformer=2, dim_aggout=384, dim_feedforward=1024, use_efficient_attention=False).to(self.device) 
         self.regressor_base = Regressor(384, num_enc_sab=1, use_efficient_attention=True, dim_feedforward=1024).to(self.device) 
