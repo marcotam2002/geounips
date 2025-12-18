@@ -1,5 +1,5 @@
 <p align="center">
- <h2 align="center"> Geometry Meets Light: Leveraging Geometric Priors for Universal Photometric Stereo under Limited Multi-Illumination Cues </h2>
+ <h2 align="center"> Geometry Meets Light: Leveraging Geometric Priors for Universal Photometric Stereo Under Limited Multi-Illumination Cues </h2>
 <p align="center">
     King-Man Tam<sup>1</sup> · 
     Satoshi Ikehata<sup>2,3</sup> · 
