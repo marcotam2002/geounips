@@ -21,15 +21,14 @@
 
  </p>
 
-<p align="center">
-    <a href="https://arxiv.org/abs/2511.13015">
-        <img src="https://img.shields.io/badge/arXiv-2511.13015-b31b1b.svg" alt="arXiv Paper">
-    </a>
-    &nbsp;&nbsp;
-    <a href="https://huggingface.co/marcotam2002/geounips">
-        <img src="https://img.shields.io/badge/🤗%20Hugging%20Face-Model-orange" alt="Hugging Face Model">
-    </a>
-</p>
+<div align="center">
+
+[![arXiv](https://img.shields.io/badge/arXiv-2511.13015-b31b1b.svg)](https://arxiv.org/abs/2511.13015)
+&nbsp;
+[![🤗 Hugging Face Model](https://img.shields.io/badge/🤗%20Hugging%20Face-Model-orange)](https://huggingface.co/marcotam2002/geounips)
+
+</div>
+
 
 ![Cover](/figures/teaser.png)
 
@@ -59,7 +58,9 @@ pip install opencv-python
 
 ### 3. Download the Model Weights
 
-Download the checkpoint file from [this link](https://drive.google.com/file/d/1GWcdvsLMpjfaqWEvAskf7Tn1Nvv-KeKE/view?usp=sharing) and place it at `checkpoint/ckpt.pytmodel`.
+You can download the checkpoint from Hugging Face or from [this link](https://drive.google.com/file/d/1GWcdvsLMpjfaqWEvAskf7Tn1Nvv-KeKE/view?usp=sharing):
+
+Place the downloaded file at `checkpoint/ckpt.pytmodel`.
 
 ### 4. 🏁 **Quick Start** 
 
