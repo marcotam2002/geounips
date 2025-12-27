@@ -25,6 +25,10 @@
     <a href="https://arxiv.org/abs/2511.13015">
         <img src="https://img.shields.io/badge/arXiv-2511.13015-b31b1b.svg" alt="arXiv Paper">
     </a>
+    &nbsp;&nbsp;
+    <a href="https://huggingface.co/marcotam2002/geounips">
+        <img src="https://img.shields.io/badge/🤗%20Hugging%20Face-Model-orange" alt="Hugging Face Model">
+    </a>
 </p>
 
 ![Cover](/figures/teaser.png)
@@ -84,7 +88,6 @@ GeoUniPS delivers state-of-the-arts performance across multiple datasets, both q
 - ✅ **2025-11-17** - 🛠️ Repository initialized.  
 - ✅ **2025-11-18** - 📄 Paper available on arXiv.  
 - ✅ **2025-11-20** - 🚀 Provide core codebase, testing subset, and pre-trained models for evaluation.  
-- ✅ **2025-11-22** - 📝 Added a overview for GeoUniPS with illustrative figures.
 
 ---
 
