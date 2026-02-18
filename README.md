@@ -88,7 +88,8 @@ GeoUniPS delivers state-of-the-arts performance across multiple datasets, both q
 
 - ✅ **2025-11-17** - 🛠️ Repository initialized.  
 - ✅ **2025-11-18** - 📄 Paper available on arXiv.  
-- ✅ **2025-11-20** - 🚀 Provide core codebase, testing subset, and pre-trained models for evaluation.  
+- ✅ **2025-11-20** - 🚀 Provide core codebase, testing subset, and pre-trained models for evaluation.
+- 🔜 Training data (PS-Perp) will be released. If you are interested, please follow this repository for updates. 
 
 ---
 
