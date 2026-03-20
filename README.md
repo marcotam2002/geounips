@@ -72,6 +72,16 @@ python geo_unips/main.py --session_name "test_data" --test_dir "assets" --checkp
 
 ---
 
+## 📦 **PS-Perp**
+
+The PS-Perp training dataset is now available.
+
+👉 **Download here:** [LINK](https://drive.google.com/drive/folders/1vm4IVwDfYZiyDaZVti9sRelE6mFCh2vX?usp=drive_link)
+
+More details about the dataset will be updated soon.
+
+---
+
 ## 📖 **Overview**  
 
 We present `GeoUniPS`, a `universal photometric stereo` network that integrates synthetic supervision with high-level geometric priors from large-scale 3D reconstruction models pretrained on massive in-the-wild data. Our **key insight** is that these 3D reconstruction models serve as visual-geometry foundation models, inherently encoding rich geometric knowledge of real scenes.
@@ -89,7 +99,7 @@ GeoUniPS delivers state-of-the-arts performance across multiple datasets, both q
 - ✅ **2025-11-17** - 🛠️ Repository initialized.  
 - ✅ **2025-11-18** - 📄 Paper available on arXiv.  
 - ✅ **2025-11-20** - 🚀 Provide core codebase, testing subset, and pre-trained models for evaluation.
-- 🔜 Training data (PS-Perp) will be released. If you are interested, please follow this repository for updates. 
+- ✅ **2026-03-20** - The training data (PS-Perp) has been released. More information about the dataset will be updated soon. 
 
 ---
 
