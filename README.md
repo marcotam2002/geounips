@@ -23,9 +23,17 @@
 
 <div align="center">
 
-[![arXiv](https://img.shields.io/badge/arXiv-2511.13015-b31b1b.svg)](https://arxiv.org/abs/2511.13015)
-&nbsp;
-[![🤗 Hugging Face Model](https://img.shields.io/badge/🤗%20Hugging%20Face-Model-orange)](https://huggingface.co/marcotam2002/geounips)
+<p align="center">
+    <a href="https://arxiv.org/abs/2511.13015">
+        <img src="https://img.shields.io/badge/arXiv-2511.13015-b31b1b.svg" alt="arXiv Paper">
+    </a>
+    <a href="https://marcotam2002.github.io/geounips/">
+        <img src="https://img.shields.io/badge/Project-Page-brightgreen.svg" alt="Project Page">
+    </a>
+    <a href="https://huggingface.co/marcotam2002/geounips">
+        <img src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-orange.svg" alt="Hugging Face Model">
+    </a>
+</p>
 
 </div>
 
