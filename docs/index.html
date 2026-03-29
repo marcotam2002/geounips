@@ -80,7 +80,11 @@
           <img src="https://raw.githubusercontent.com/marcotam2002/geounips/main/figures/teaser.png" alt="GeoUniPS teaser" style="max-width: 900px; width: 100%;">
         </p>
         <p class="subtitle has-text-centered">
-          GeoUniPS leverages geometric priors from large-scale 3D reconstruction models to improve universal photometric stereo under limited lighting cues.
+          Our method effectively leverages geometric priors from pretrained 3D reconstruction model,
+          achieving more plausible normal map recovery in challenging scenes with complex backgrounds
+          and limited lighting variation. Compared to SoTA monocular normal prediction models (e.g.,
+          MoGe-2 (Wang et al. 2025c)), our approach captures finer surface details by incorporating
+          multi-illumination cues.
         </p>
       </div>
     </div>
@@ -108,9 +112,16 @@
 
     <div class="columns is-centered">
       <div class="column is-full-width">
-        <h2 class="title is-3">Pipeline</h2>
+        <h2 class="title is-3">Method</h2>
         <p style="text-align: center;">
           <img src="https://raw.githubusercontent.com/marcotam2002/geounips/main/figures/pipeline.png" alt="GeoUniPS pipeline" style="max-width: 900px; width: 100%;">
+        </p>
+        <p class="subtitle has-text-justified">
+          Overview of our GeoUniPS architecture. Given multiple input images captured under different lighting conditions,
+          the Light-Geometry Dual-Branch Encoder extracts both light-variant features from multi-illumination cues (EncoderIL) and
+          geometric features from the pretrained VGGT aggregator (EncoderGeo). These features are concatenated with the input images
+          using an MLP-based embedding, after which the Dual-Scale Normal Decoder performs pixel-wise normal regression at sampled
+          locations.
         </p>
       </div>
     </div>
@@ -124,49 +135,17 @@
       </div>
     </div>
 
-    <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Quick Start</h2>
-        <pre><code>git clone https://github.com/marcotam2002/geounips.git
-cd geounips
-
-conda create -n geounips python=3.10.19
-conda activate geounips
-
-pip install torch==2.4.1+cu121 torchvision==0.19.1+cu121 torchaudio==2.4.1+cu121 --index-url https://download.pytorch.org/whl/cu121
-pip install einops
-pip install opencv-python
-
-python geo_unips/main.py --session_name "test_data" --test_dir "assets" --checkpoint checkpoint --max_image_num 4 --max_image_res 512 --scalable</code></pre>
-      </div>
-    </div>
-
-    <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Timeline</h2>
-        <div class="content">
-          <ul>
-            <li>2025-11-17: Repository initialized.</li>
-            <li>2025-11-18: Paper available on arXiv.</li>
-            <li>2025-11-20: Core codebase, test subset, and pretrained models released.</li>
-            <li>2026-03-20: PS-Perp training data released.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
   </div>
 </section>
 
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>@misc{kmtam2025geounips,
+    <pre><code>@inproceedings{kmtam2026geounips,
   title={Geometry Meets Light: Leveraging Geometric Priors for Universal Photometric Stereo Under Limited Multi-Illumination Cues},
   author={King-Man Tam and Satoshi Ikehata and Yuta Asano and Zhaoyi An and Rei Kawakami},
-  year={2025},
-  eprint={2511.13015},
-  archivePrefix={arXiv},
-  primaryClass={cs.CV}
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+  year={2026}
 }</code></pre>
   </div>
 </section>
