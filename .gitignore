@@ -1,4 +1,2 @@
-__pycache__/
-test_data/
-checkpoint/
-test.txt
+*.pyc
+/polarfree-huggingface
