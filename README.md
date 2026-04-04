@@ -80,7 +80,74 @@ The PS-Perp training dataset is now available.
 
 👉 **Download here:** [LINK](https://drive.google.com/drive/folders/1vm4IVwDfYZiyDaZVti9sRelE6mFCh2vX?usp=drive_link)
 
-More details about the dataset will be updated soon.
+The total size of the **PS-Perp dataset** is approximately **1.1 TB**.  
+To facilitate downloading, it is divided into **12 parts**:
+
+```
+part_00.tar.gz ~ part_11.tar.gz
+```
+
+The data is **statistically evenly distributed**, so users may download only a subset of the parts for their own use.
+
+---
+
+## Dataset Structure
+
+After extraction, the dataset is organized as:
+
+```
+DATA_PATH/
+├── A.data/
+├── B.data/
+├── C.data/
+└── ...
+```
+
+Each `.data` folder corresponds to **one scene**, and all `.data` folders share the **same structure**:
+
+```
+<scene>.data/
+├── basecolor.png          # albedo
+├── metallic.png           # metallic map
+├── roughness.png          # roughness map
+├── normal.tif             # ground-truth normal
+├── depth.exr              # depth map
+├── position.exr           # 3D position map
+├── camera.txt             # camera parameters
+├── mask.png               # optional foreground mask
+├── image_00000_Point.tif
+├── image_00001_Point.tif
+├── image_00002_DirEnv.tif
+├── image_00003_DirEnv.tif
+├── image_00004_PointEnv.tif
+├── image_00005_Dir.tif
+├── image_00006_DirEnv.tif
+├── image_00007_Dir.tif
+├── image_00008_Dir.tif
+└── image_00009_PointEnv.tif
+```
+
+---
+
+## Notes
+
+- `image_XXXXX_*.tif` represents different lighting conditions:
+  - `Point`: point light  
+  - `Dir`: directional light  
+  - `Env`: environment light  
+  - `PointEnv / DirEnv`: combined lighting
+- ⚠️ **Important Notice**:  
+  The provided `position.exr` (point map) is found to be **problematic**. (We didn't use it in our paper.) 
+  If a point map is required, please **recompute it using the depth map (`depth.exr`) and camera parameters (`camera.txt`) via reprojection**.
+
+
+---
+
+## Usage Tip
+
+Since each part contains a **balanced subset of data**, you can:
+- Download only a few parts for quick experiments
+- Scale up by adding more parts for full training
 
 ---
 
@@ -101,7 +168,8 @@ GeoUniPS delivers state-of-the-arts performance across multiple datasets, both q
 - ✅ **2025-11-17** - 🛠️ Repository initialized.  
 - ✅ **2025-11-18** - 📄 Paper available on arXiv.  
 - ✅ **2025-11-20** - 🚀 Provide core codebase, testing subset, and pre-trained models for evaluation.
-- ✅ **2026-03-20** - The training data (PS-Perp) has been released. More information about the dataset will be updated soon. 
+- ✅ **2026-03-20** - The training data (PS-Perp) has been released.
+- ✅ **2026-04-04** - Detailed description for PS-Perp have been provided.
 
 ---
 
