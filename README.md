@@ -178,15 +178,12 @@ GeoUniPS delivers state-of-the-arts performance across multiple datasets, both q
 If you find our work helpful, please consider citing:
 
 ```bibtex
-@misc{kmtam2025geounips,
-      title={Geometry Meets Light: Leveraging Geometric Priors for Universal Photometric Stereo Under Limited Multi-Illumination Cues}, 
-      author={King-Man Tam and Satoshi Ikehata and Yuta Asano and Zhaoyi An and Rei Kawakami},
-      year={2025},
-      eprint={2511.13015},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
+@inproceedings{kmtam2026geounips,
+  title={Geometry Meets Light: Leveraging Geometric Priors for Universal Photometric Stereo Under Limited Multi-Illumination Cues},
+  author={King-Man Tam and Satoshi Ikehata and Yuta Asano and Zhaoyi An and Rei Kawakami},
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+  year={2026}
 }
-
 ```
 
 ---
