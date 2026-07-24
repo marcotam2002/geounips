@@ -78,7 +78,7 @@ python geo_unips/main.py --session_name "test_data" --test_dir "assets" --checkp
 
 The PS-Perp training dataset is now available.
 
-👉 **Download here:** [LINK](https://drive.google.com/drive/folders/1vm4IVwDfYZiyDaZVti9sRelE6mFCh2vX?usp=drive_link)
+👉 **Download here:** [LINK](https://drive.google.com/drive/folders/1w9-pFxQbmcGbCkKHSWsPFC3E6HafjBbh?usp=drive_link)
 
 The total size of the **PS-Perp dataset** is approximately **1.1 TB**.  
 To facilitate downloading, it is divided into **12 parts**:
