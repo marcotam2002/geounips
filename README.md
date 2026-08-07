@@ -27,7 +27,7 @@
     <a href="https://arxiv.org/abs/2511.13015"><img src="https://img.shields.io/badge/arXiv-2511.13015-b31b1b.svg" alt="arXiv Paper"></a>
     <a href="https://marcotam2002.github.io/geounips/"><img src="https://img.shields.io/badge/Project-Page-brightgreen.svg" alt="Project Page"></a>
     <a href="https://huggingface.co/marcotam2002/geounips"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-orange.svg" alt="Hugging Face Model"></a>
-    <a href="https://drive.google.com/drive/folders/1w9-pFxQbmcGbCkKHSWsPFC3E6HafjBbh?usp=drive_link"><img src="https://img.shields.io/badge/%F0%9F%91%89%20Download-Dataset-blue.svg" alt="Download Dataset"></a>
+    <a href="https://drive.google.com/drive/folders/1w9-pFxQbmcGbCkKHSWsPFC3E6HafjBbh?usp=drive_link"><img src="https://img.shields.io/badge/Dataset-Google%20Drive-4285F4.svg?logo=googledrive&logoColor=white" alt="Dataset"></a>
 </p>
 
 </div>
