@@ -181,7 +181,7 @@ If you find our work helpful, please consider citing:
 ```bibtex
 @inproceedings{kmtam2026geounips,
   title={Geometry Meets Light: Leveraging Geometric Priors for Universal Photometric Stereo Under Limited Multi-Illumination Cues},
-  author={King-Man Tam and Satoshi Ikehata and Yuta Asano and Zhaoyi An and Rei Kawakami},
+  author={Tam, King-Man and Ikehata, Satoshi and Asano, Yuta and An, Zhaoyi and Kawakami, Rei},
   booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
   year={2026}
 }
