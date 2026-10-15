@@ -15,13 +15,9 @@
         <sup>3</sup>Denso IT Laboratory
     </b>
 </p>
- <p align="center"> 
+<p align="center">
     <b>AAAI 2026 Oral</b>
- </p>
-
- </p>
-
-<div align="center">
+</p>
 
 <p align="center">
     <a href="https://arxiv.org/abs/2511.13015"><img src="https://img.shields.io/badge/arXiv-2511.13015-b31b1b.svg" alt="arXiv Paper"></a>
@@ -30,73 +26,56 @@
     <a href="https://drive.google.com/drive/folders/1w9-pFxQbmcGbCkKHSWsPFC3E6HafjBbh?usp=drive_link"><img src="https://img.shields.io/badge/Google%20Drive-Dataset-4285F4.svg?logo=googledrive&logoColor=white" alt="Dataset"></a>
 </p>
 
-</div>
-
-
 ![Cover](/figures/teaser.png)
 
----
+## Overview
 
-## 🚀 **Installation & Usage**
+GeoUniPS is a universal photometric stereo network that combines synthetic supervision with high-level geometric priors from large-scale 3D reconstruction models pretrained on in-the-wild data. These reconstruction models act as visual-geometry foundation models and already encode rich geometric knowledge of real scenes, which helps when only a few illumination conditions are available.
 
-### 1. Clone the Repository
+![Pipeline](/figures/pipeline.png)
+
+GeoUniPS achieves state-of-the-art performance on multiple datasets, both quantitatively and qualitatively, and is particularly strong on complex in-the-wild scenes.
+
+![Result](/figures/multi_ill.png)
+
+### Updates
+
+- **2026-04-04**: Added a detailed description of PS-Perp.
+- **2026-03-20**: Released the PS-Perp training dataset.
+- **2025-11-20**: Released the core code, a test subset, and pretrained models.
+- **2025-11-18**: Paper available on arXiv.
+
+## Installation
 
 ```bash
 git clone https://github.com/marcotam2002/geounips.git
 cd geounips
-```
 
-### 2. Environment Setup
-
-```bash
 conda create -n geounips python=3.10.19
 conda activate geounips
 
 pip install torch==2.4.1+cu121 torchvision==0.19.1+cu121 torchaudio==2.4.1+cu121 \
     --index-url https://download.pytorch.org/whl/cu121
-
-pip install einops
-pip install opencv-python
+pip install einops opencv-python
 ```
 
-### 3. Download the Model Weights
+Download the checkpoint from [Hugging Face](https://huggingface.co/marcotam2002/geounips) or [Google Drive](https://drive.google.com/file/d/1GWcdvsLMpjfaqWEvAskf7Tn1Nvv-KeKE/view?usp=sharing) and place it at `checkpoint/ckpt.pytmodel`.
 
-You can download the checkpoint from Hugging Face or from [this link](https://drive.google.com/file/d/1GWcdvsLMpjfaqWEvAskf7Tn1Nvv-KeKE/view?usp=sharing):
-
-Place the downloaded file at `checkpoint/ckpt.pytmodel`.
-
-### 4. 🏁 **Quick Start** 
-
-Once everything is set up, run the demo script with the following command. The --session_name argument specifies the output folder, and the --test_dir argument specifies the input image folder:
+## Inference
 
 ```bash
 python geo_unips/main.py --session_name "test_data" --test_dir "assets" --checkpoint checkpoint --max_image_num 4 --max_image_res 512 --scalable
 ```
 
----
+`--test_dir` is the input image folder and `--session_name` is the name of the output folder.
 
-## 📦 **PS-Perp**
+## PS-Perp Dataset
 
-The PS-Perp training dataset is now available.
+The PS-Perp training dataset (about 1.1 TB) is available on [Google Drive](https://drive.google.com/drive/folders/1w9-pFxQbmcGbCkKHSWsPFC3E6HafjBbh?usp=drive_link). It is split into 12 archives, `part_00.tar.gz` to `part_11.tar.gz`. Scenes are distributed evenly across the parts, so a few parts are enough for quick experiments and more can be added for full training.
 
-👉 **Download here:** [LINK](https://drive.google.com/drive/folders/1w9-pFxQbmcGbCkKHSWsPFC3E6HafjBbh?usp=drive_link)
+After extraction, each `.data` folder holds one scene:
 
-The total size of the **PS-Perp dataset** is approximately **1.1 TB**.  
-To facilitate downloading, it is divided into **12 parts**:
-
-```
-part_00.tar.gz ~ part_11.tar.gz
-```
-
-The data is **statistically evenly distributed**, so users may download only a subset of the parts for their own use.
-
----
-
-## Dataset Structure
-
-After extraction, the dataset is organized as:
-
-```
+```text
 DATA_PATH/
 ├── A.data/
 ├── B.data/
@@ -104,79 +83,30 @@ DATA_PATH/
 └── ...
 ```
 
-Each `.data` folder corresponds to **one scene**, and all `.data` folders share the **same structure**:
+All scene folders share the same layout:
 
-```
+```text
 <scene>.data/
 ├── basecolor.png          # albedo
 ├── metallic.png           # metallic map
 ├── roughness.png          # roughness map
 ├── normal.tif             # ground-truth normal
 ├── depth.exr              # depth map
-├── position.exr           # 3D position map
+├── position.exr           # 3D position map (see note below)
 ├── camera.txt             # camera parameters
 ├── mask.png               # optional foreground mask
 ├── image_00000_Point.tif
 ├── image_00001_Point.tif
 ├── image_00002_DirEnv.tif
-├── image_00003_DirEnv.tif
-├── image_00004_PointEnv.tif
-├── image_00005_Dir.tif
-├── image_00006_DirEnv.tif
-├── image_00007_Dir.tif
-├── image_00008_Dir.tif
+├── ...
 └── image_00009_PointEnv.tif
 ```
 
----
+The suffix of each `image_XXXXX_*.tif` gives its lighting condition: `Point` (point light), `Dir` (directional light), `Env` (environment light), or a combination such as `PointEnv` and `DirEnv`.
 
-## Notes
+**Known issue:** the provided `position.exr` is problematic and was not used in the paper. If you need a point map, recompute it from `depth.exr` and the camera parameters in `camera.txt`.
 
-- `image_XXXXX_*.tif` represents different lighting conditions:
-  - `Point`: point light  
-  - `Dir`: directional light  
-  - `Env`: environment light  
-  - `PointEnv / DirEnv`: combined lighting
-- ⚠️ **Important Notice**:  
-  The provided `position.exr` (point map) is found to be **problematic**. (We didn't use it in our paper.) 
-  If a point map is required, please **recompute it using the depth map (`depth.exr`) and camera parameters (`camera.txt`) via reprojection**.
-
-
----
-
-## Usage Tip
-
-Since each part contains a **balanced subset of data**, you can:
-- Download only a few parts for quick experiments
-- Scale up by adding more parts for full training
-
----
-
-## 📖 **Overview**  
-
-We present `GeoUniPS`, a `universal photometric stereo` network that integrates synthetic supervision with high-level geometric priors from large-scale 3D reconstruction models pretrained on massive in-the-wild data. Our **key insight** is that these 3D reconstruction models serve as visual-geometry foundation models, inherently encoding rich geometric knowledge of real scenes.
-
-![Pipeline](/figures/pipeline.png)
-
-GeoUniPS delivers state-of-the-arts performance across multiple datasets, both quantitatively and qualitatively, especially in the complex in-the-wild scenes.
-
-![Result](/figures/multi_ill.png)
-
----
-
-## ⏳ **Timeline**  
-
-- ✅ **2025-11-17** - 🛠️ Repository initialized.  
-- ✅ **2025-11-18** - 📄 Paper available on arXiv.  
-- ✅ **2025-11-20** - 🚀 Provide core codebase, testing subset, and pre-trained models for evaluation.
-- ✅ **2026-03-20** - The training data (PS-Perp) has been released.
-- ✅ **2026-04-04** - Detailed description for PS-Perp have been provided.
-
----
-
-## 📜 Citation
-
-If you find our work helpful, please consider citing:
+## Citation
 
 ```bibtex
 @inproceedings{kmtam2026geounips,
@@ -187,10 +117,6 @@ If you find our work helpful, please consider citing:
 }
 ```
 
----
-
-## 📝 License
+## License
 
 This project is released under the [MIT License](LICENSE).
-
-If you find this repository useful, please consider **starring ⭐** and **forking 🍴** it!
